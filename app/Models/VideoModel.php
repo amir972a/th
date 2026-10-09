@@ -28,6 +28,17 @@ class VideoModel {
         ]);
     }
 
+    public function update($videoId, $title, $description, $categoryId, $visibility) {
+        $stmt = $this->db->prepare("UPDATE videos SET title = :title, description = :description, category_id = :category_id, visibility = :visibility WHERE id = :id");
+        return $stmt->execute([
+            'title' => $title,
+            'description' => $description,
+            'category_id' => $categoryId,
+            'visibility' => $visibility,
+            'id' => $videoId
+        ]);
+    }
+
     public function updateStatus($videoId, $status) {
         $stmt = $this->db->prepare("UPDATE videos SET status = :status WHERE id = :id");
         return $stmt->execute([

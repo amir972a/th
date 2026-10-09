@@ -1,4 +1,17 @@
 <div class="home-container">
+    <?php if (!empty($popularTags)): ?>
+    <div class="popular-tags-section" style="margin-bottom: 30px; background: var(--secondary-bg); padding: 15px; border-radius: 8px;">
+        <h3 style="margin-bottom: 10px; font-size: 16px;">تگ‌های محبوب 🔥</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <?php foreach ($popularTags as $ptag): ?>
+                <a href="<?= BASE_URL ?>/tag/<?= htmlspecialchars($ptag['slug']) ?>" class="tag-chip" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 15px; font-size: 14px; text-decoration: none; color: var(--text-color);">
+                    <?= htmlspecialchars($ptag['name']) ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <h2 style="margin-bottom: 20px;">ویدیوهای جدید</h2>
     <div class="video-grid">
         <?php if (empty($latestVideos)): ?>

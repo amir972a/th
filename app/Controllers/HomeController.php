@@ -6,6 +6,10 @@ class HomeController extends Controller {
         $videoModel = new VideoModel();
         $latestVideos = $videoModel->getLatestPublic(12);
 
+        require_once __DIR__ . '/../Models/TagModel.php';
+        $tagModel = new TagModel();
+        $popularTags = $tagModel->getPopularTags(15);
+
         $pageTitle = 'صفحه اصلی';
         $contentView = __DIR__ . '/../Views/home.php';
         require_once __DIR__ . '/../Views/layout.php';

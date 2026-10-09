@@ -71,6 +71,68 @@ class AdminController extends Controller {
         require_once __DIR__ . '/../Views/layout.php';
     }
 
+    public function tags() {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->query("
+            SELECT t.*, COUNT(vt.video_id) as video_count
+            FROM tags t
+            LEFT JOIN video_tags vt ON t.id = vt.tag_id
+            GROUP BY t.id
+            ORDER BY t.name ASC
+        ");
+        $tags = $stmt->fetchAll();
+
+        $pageTitle = 'مدیریت تگ‌ها';
+        $contentView = __DIR__ . '/../Views/admin/tags.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function moderateTag($tagId) {
+        if (!$this->isPost()) $this->redirect('/admin/tags');
+
+        if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+            Session::setFlash('error', 'توکن نامعتبر.');
+            $this->redirect('/admin/tags');
+        }
+
+        $action = $_POST['action'];
+        $db = Database::getInstance()->getConnection();
+
+        if ($action === 'rename') {
+            $newName = trim($_POST['new_name']);
+            if (!empty($newName)) {
+                $slug = mb_strtolower(str_replace(' ', '-', $newName));
+                $slug = preg_replace('/[^\p{L}\p{N}\-]+/u', '', $slug);
+                try {
+                    $stmt = $db->prepare("UPDATE tags SET name = :name, slug = :slug WHERE id = :id");
+                    $stmt->execute(['name' => $newName, 'slug' => $slug, 'id' => $tagId]);
+                    Session::setFlash('success', 'تگ با موفقیت تغییر نام یافت.');
+                } catch (PDOException $e) {
+                    Session::setFlash('error', 'این نام تگ یا اسلاگ از قبل وجود دارد.');
+                }
+            }
+        } elseif ($action === 'delete') {
+            $stmt = $db->prepare("DELETE FROM tags WHERE id = :id");
+            $stmt->execute(['id' => $tagId]);
+            Session::setFlash('success', 'تگ با موفقیت حذف شد.');
+        } elseif ($action === 'merge') {
+            $targetId = (int)$_POST['target_id'];
+            if ($targetId > 0 && $targetId != $tagId) {
+                // Update all video_tags using old tagId to use targetId, ignoring duplicates
+                $stmt = $db->prepare("UPDATE IGNORE video_tags SET tag_id = :target WHERE tag_id = :old");
+                $stmt->execute(['target' => $targetId, 'old' => $tagId]);
+                // Delete old tag (any remaining video_tags for old tagId will cascade delete because they were duplicates)
+                $stmt = $db->prepare("DELETE FROM tags WHERE id = :id");
+                $stmt->execute(['id' => $tagId]);
+                Session::setFlash('success', 'تگ‌ها با موفقیت ادغام شدند.');
+            } else {
+                Session::setFlash('error', 'تگ مقصد نامعتبر است.');
+            }
+        }
+
+        $this->redirect('/admin/tags');
+    }
+
     public function moderateVideo($videoId) {
         if (!$this->isPost()) $this->redirect('/admin/videos');
 

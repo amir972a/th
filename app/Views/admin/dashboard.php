@@ -4,6 +4,7 @@
     <div style="margin: 20px 0; display: flex; gap: 15px;">
         <a href="<?= BASE_URL ?>/admin/users" class="btn">مدیریت کاربران</a>
         <a href="<?= BASE_URL ?>/admin/videos" class="btn">مدیریت ویدیوها</a>
+        <a href="<?= BASE_URL ?>/admin/tags" class="btn">مدیریت تگ‌ها</a>
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">

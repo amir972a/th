@@ -71,7 +71,18 @@
         <?= nl2br(Security::escape($video['description'])) ?>
     </div>
 
-    <div class="video-actions" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; gap: 10px;">
+    <?php if (!empty($tags)): ?>
+    <div class="video-tags" style="margin-top: 15px;">
+        <span style="color: #aaa; margin-left: 5px;">تگ‌ها:</span>
+        <?php foreach ($tags as $tag): ?>
+            <a href="<?= BASE_URL ?>/tag/<?= htmlspecialchars($tag['slug']) ?>" class="tag-chip" style="display: inline-block; background: var(--secondary-bg); color: var(--text-color); padding: 3px 10px; border-radius: 12px; font-size: 13px; text-decoration: none; margin-left: 5px; border: 1px solid var(--border-color);">
+                <?= htmlspecialchars($tag['name']) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="video-actions" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; gap: 10px; align-items: center;">
         <form action="<?= BASE_URL ?>/video/<?= $video['id'] ?>/rate" method="POST">
             <input type="hidden" name="csrf_token" value="<?= Security::generateCSRFToken() ?>">
             <button type="submit" name="rating" value="like" class="btn" style="background: <?= $userRating == 1 ? 'var(--primary-color)' : 'var(--hover-bg)' ?>">
@@ -81,6 +92,11 @@
                 👎 <?= (int)($ratings['dislikes'] ?? 0) ?>
             </button>
         </form>
+        <?php if (Session::get('user_id') == $video['user_id'] || in_array(Session::get('user_role'), ['admin', 'moderator'])): ?>
+            <div style="margin-right: auto;">
+                <a href="<?= BASE_URL ?>/video/<?= $video['id'] ?>/edit" class="btn" style="background: var(--secondary-bg); color: var(--text-color); border: 1px solid var(--border-color);">ویرایش ویدیو</a>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

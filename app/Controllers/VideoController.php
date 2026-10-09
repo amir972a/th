@@ -22,6 +22,19 @@ class VideoController extends Controller {
             $categoryId = $_POST['category_id'] ?: null;
             $visibility = $_POST['visibility'] === 'private' ? 'private' : 'public';
 
+            // Process tags
+            $tagsInput = $_POST['tags'] ?? '';
+            $tagsArray = [];
+            if (!empty(trim($tagsInput))) {
+                $rawTags = explode(',', $tagsInput);
+                foreach ($rawTags as $tag) {
+                    $cleanTag = trim($tag);
+                    if (!empty($cleanTag) && !in_array($cleanTag, $tagsArray)) {
+                        $tagsArray[] = $cleanTag;
+                    }
+                }
+            }
+
             $errors = [];
 
             if (empty($title)) {
@@ -82,6 +95,13 @@ class VideoController extends Controller {
                         $this->videoModel->updateStatus($videoId, 'published');
                     }
 
+                    // Sync tags
+                    if (!empty($tagsArray)) {
+                        require_once __DIR__ . '/../Models/TagModel.php';
+                        $tagModel = new TagModel();
+                        $tagModel->syncVideoTags($videoId, $tagsArray);
+                    }
+
                     Session::setFlash('success', 'ویدیو با موفقیت آپلود شد.');
                     $this->redirect('/watch/' . $videoId);
                 } else {
@@ -99,6 +119,68 @@ class VideoController extends Controller {
         $categories = $this->videoModel->getCategories();
         $pageTitle = 'آپلود ویدیو';
         $contentView = __DIR__ . '/../Views/video/upload.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function edit($id) {
+        if (!Session::get('user_id')) {
+            $this->redirect('/login');
+        }
+
+        $video = $this->videoModel->findById($id);
+        if (!$video) {
+            Session::setFlash('error', 'ویدیو یافت نشد.');
+            $this->redirect('/');
+        }
+
+        $isOwner = $video['user_id'] == Session::get('user_id');
+        $isAdmin = in_array(Session::get('user_role'), ['admin', 'moderator']);
+
+        if (!$isOwner && !$isAdmin) {
+            Session::setFlash('error', 'شما دسترسی لازم برای ویرایش این ویدیو را ندارید.');
+            $this->redirect('/watch/' . $id);
+        }
+
+        require_once __DIR__ . '/../Models/TagModel.php';
+        $tagModel = new TagModel();
+
+        if ($this->isPost()) {
+            if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+                Session::setFlash('error', 'توکن امنیتی نامعتبر است.');
+                $this->redirect('/video/' . $id . '/edit');
+            }
+
+            $title = trim($_POST['title']);
+            $description = trim($_POST['description']);
+            $categoryId = $_POST['category_id'] ?: null;
+            $visibility = $_POST['visibility'] === 'private' ? 'private' : 'public';
+
+            $tagsInput = $_POST['tags'] ?? '';
+            $tagsArray = [];
+            if (!empty(trim($tagsInput))) {
+                $rawTags = explode(',', $tagsInput);
+                foreach ($rawTags as $tag) {
+                    $cleanTag = trim($tag);
+                    if (!empty($cleanTag) && !in_array($cleanTag, $tagsArray)) {
+                        $tagsArray[] = $cleanTag;
+                    }
+                }
+            }
+
+            if (empty($title)) {
+                Session::setFlash('error', 'عنوان ویدیو الزامی است.');
+            } else {
+                $this->videoModel->update($id, $title, $description, $categoryId, $visibility);
+                $tagModel->syncVideoTags($id, $tagsArray);
+                Session::setFlash('success', 'ویدیو با موفقیت ویرایش شد.');
+                $this->redirect('/watch/' . $id);
+            }
+        }
+
+        $tags = $tagModel->getTagsForVideo($id);
+        $categories = $this->videoModel->getCategories();
+        $pageTitle = 'ویرایش ویدیو';
+        $contentView = __DIR__ . '/../Views/video/edit.php';
         require_once __DIR__ . '/../Views/layout.php';
     }
 
@@ -157,6 +239,11 @@ class VideoController extends Controller {
         $comments = $socialModel->getCommentsByVideo($id);
         $ratings = $socialModel->getVideoRating($id);
         $userRating = Session::get('user_id') ? $socialModel->getUserRating($id, Session::get('user_id')) : null;
+
+        // Fetch tags
+        require_once __DIR__ . '/../Models/TagModel.php';
+        $tagModel = new TagModel();
+        $tags = $tagModel->getTagsForVideo($id);
 
         $pageTitle = $video['title'];
         $contentView = __DIR__ . '/../Views/video/watch.php';
