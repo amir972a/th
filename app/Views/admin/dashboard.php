@@ -1,10 +1,12 @@
 <div class="admin-container">
     <h2>پنل مدیریت</h2>
 
-    <div style="margin: 20px 0; display: flex; gap: 15px;">
+    <div style="margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap;">
         <a href="<?= BASE_URL ?>/admin/users" class="btn">مدیریت کاربران</a>
         <a href="<?= BASE_URL ?>/admin/videos" class="btn">مدیریت ویدیوها</a>
         <a href="<?= BASE_URL ?>/admin/tags" class="btn">مدیریت تگ‌ها</a>
+        <a href="<?= BASE_URL ?>/admin/settings/header" class="btn" style="background: var(--primary-color);">تنظیمات هدر</a>
+        <a href="<?= BASE_URL ?>/admin/settings/footer" class="btn" style="background: var(--primary-color);">تنظیمات فوتر</a>
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">

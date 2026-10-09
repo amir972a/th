@@ -25,6 +25,128 @@ class AdminController extends Controller {
         require_once __DIR__ . '/../Views/layout.php';
     }
 
+    public function headerSettings() {
+        if (Session::get('user_role') !== 'admin') {
+            Session::setFlash('error', 'فقط مدیران کل به این بخش دسترسی دارند.');
+            $this->redirect('/admin');
+        }
+
+        require_once __DIR__ . '/../Models/SettingModel.php';
+        $settingModel = new SettingModel();
+        require_once __DIR__ . '/../Core/ViewHelper.php';
+
+        if ($this->isPost()) {
+            if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+                Session::setFlash('error', 'توکن نامعتبر.');
+                $this->redirect('/admin/settings/header');
+            }
+
+            $config = [
+                'welcome_msg' => $_POST['welcome_msg'] ?? '',
+                'logo_text_1' => $_POST['logo_text_1'] ?? '',
+                'logo_text_2' => $_POST['logo_text_2'] ?? '',
+                'logo_url' => $_POST['logo_url'] ?? '',
+                'search_enabled' => isset($_POST['search_enabled']),
+                'auth_enabled' => isset($_POST['auth_enabled']),
+                'upload_enabled' => isset($_POST['upload_enabled']),
+                'menu' => []
+            ];
+
+            if (isset($_POST['menu']) && is_array($_POST['menu'])) {
+                foreach ($_POST['menu'] as $item) {
+                    if (!empty($item['label'])) {
+                        $config['menu'][] = [
+                            'label' => $item['label'],
+                            'url' => $item['url'] ?? '#',
+                            'enabled' => isset($item['enabled'])
+                        ];
+                    }
+                }
+            }
+
+            $settingModel->set('header_config', json_encode($config, JSON_UNESCAPED_UNICODE));
+            Session::setFlash('success', 'تنظیمات هدر با موفقیت ذخیره شد.');
+            $this->redirect('/admin/settings/header');
+        }
+
+        $headerConfig = ViewHelper::getHeaderConfig();
+        $pageTitle = 'تنظیمات هدر';
+        $contentView = __DIR__ . '/../Views/admin/settings_header.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function footerSettings() {
+        if (Session::get('user_role') !== 'admin') {
+            Session::setFlash('error', 'فقط مدیران کل به این بخش دسترسی دارند.');
+            $this->redirect('/admin');
+        }
+
+        require_once __DIR__ . '/../Models/SettingModel.php';
+        $settingModel = new SettingModel();
+        require_once __DIR__ . '/../Core/ViewHelper.php';
+
+        if ($this->isPost()) {
+            if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+                Session::setFlash('error', 'توکن نامعتبر.');
+                $this->redirect('/admin/settings/footer');
+            }
+
+            $config = [
+                'copyright_text' => $_POST['copyright_text'] ?? '',
+                'description' => $_POST['description'] ?? '',
+                'logo_url' => $_POST['logo_url'] ?? '',
+                'columns' => [],
+                'social_links' => []
+            ];
+
+            if (isset($_POST['col']) && is_array($_POST['col'])) {
+                foreach ($_POST['col'] as $columnItem) {
+                    if (!empty($columnItem['title'])) {
+                        $col = [
+                            'title' => $columnItem['title'],
+                            'enabled' => isset($columnItem['enabled']),
+                            'links' => []
+                        ];
+
+                        if (isset($columnItem['links']) && is_array($columnItem['links'])) {
+                            foreach ($columnItem['links'] as $linkItem) {
+                                if (!empty($linkItem['label'])) {
+                                    $col['links'][] = [
+                                        'label' => $linkItem['label'],
+                                        'url' => $linkItem['url'] ?? '#',
+                                        'enabled' => isset($linkItem['enabled'])
+                                    ];
+                                }
+                            }
+                        }
+                        $config['columns'][] = $col;
+                    }
+                }
+            }
+
+            if (isset($_POST['social']) && is_array($_POST['social'])) {
+                foreach ($_POST['social'] as $socialItem) {
+                    if (!empty($socialItem['icon'])) {
+                        $config['social_links'][] = [
+                            'icon' => $socialItem['icon'],
+                            'url' => $socialItem['url'] ?? '#',
+                            'enabled' => isset($socialItem['enabled'])
+                        ];
+                    }
+                }
+            }
+
+            $settingModel->set('footer_config', json_encode($config, JSON_UNESCAPED_UNICODE));
+            Session::setFlash('success', 'تنظیمات فوتر با موفقیت ذخیره شد.');
+            $this->redirect('/admin/settings/footer');
+        }
+
+        $footerConfig = ViewHelper::getFooterConfig();
+        $pageTitle = 'تنظیمات فوتر';
+        $contentView = __DIR__ . '/../Views/admin/settings_footer.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
     public function users() {
         if (Session::get('user_role') !== 'admin') {
             Session::setFlash('error', 'فقط مدیران کل به این بخش دسترسی دارند.');
