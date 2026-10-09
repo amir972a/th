@@ -25,6 +25,82 @@ class AdminController extends Controller {
         require_once __DIR__ . '/../Views/layout.php';
     }
 
+    public function categories() {
+        if (Session::get('user_role') !== 'admin') {
+            $this->redirect('/admin');
+        }
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->query("
+            SELECT c.*, COUNT(v.id) as video_count
+            FROM categories c
+            LEFT JOIN videos v ON c.id = v.category_id
+            GROUP BY c.id ORDER BY c.name ASC
+        ");
+        $categories = $stmt->fetchAll();
+        $pageTitle = 'مدیریت دسته‌بندی‌ها';
+        $contentView = __DIR__ . '/../Views/admin/categories.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function addCategory() {
+        if (Session::get('user_role') !== 'admin' || !$this->isPost()) $this->redirect('/admin/categories');
+        if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+            Session::setFlash('error', 'توکن نامعتبر.');
+            $this->redirect('/admin/categories');
+        }
+
+        $name = trim($_POST['name']);
+        $slug = trim($_POST['slug']);
+        if ($name && $slug) {
+            try {
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("INSERT INTO categories (name, slug) VALUES (:name, :slug)");
+                $stmt->execute(['name' => $name, 'slug' => $slug]);
+                Session::setFlash('success', 'دسته‌بندی افزوده شد.');
+            } catch (Exception $e) {
+                Session::setFlash('error', 'خطا در افزودن (شاید اسلاگ تکراری باشد).');
+            }
+        }
+        $this->redirect('/admin/categories');
+    }
+
+    public function pages() {
+        if (Session::get('user_role') !== 'admin') {
+            $this->redirect('/admin');
+        }
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->query("SELECT * FROM pages ORDER BY created_at DESC");
+        $pages = $stmt->fetchAll();
+        $pageTitle = 'مدیریت صفحات';
+        $contentView = __DIR__ . '/../Views/admin/pages.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function addPage() {
+        if (Session::get('user_role') !== 'admin' || !$this->isPost()) $this->redirect('/admin/pages');
+        if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+            Session::setFlash('error', 'توکن نامعتبر.');
+            $this->redirect('/admin/pages');
+        }
+
+        $title = trim($_POST['title']);
+        $slug = trim($_POST['slug']);
+        $content = trim($_POST['content']);
+        if ($title && $slug && $content) {
+            try {
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("INSERT INTO pages (title, slug, content) VALUES (:title, :slug, :content)");
+                $stmt->execute(['title' => $title, 'slug' => $slug, 'content' => $content]);
+                Session::setFlash('success', 'صفحه افزوده شد.');
+            } catch (Exception $e) {
+                Session::setFlash('error', 'خطا در افزودن (شاید اسلاگ تکراری باشد).');
+            }
+        } else {
+            Session::setFlash('error', 'پر کردن همه فیلدها الزامی است.');
+        }
+        $this->redirect('/admin/pages');
+    }
+
     public function headerSettings() {
         if (Session::get('user_role') !== 'admin') {
             Session::setFlash('error', 'فقط مدیران کل به این بخش دسترسی دارند.');
@@ -70,6 +146,11 @@ class AdminController extends Controller {
         }
 
         $headerConfig = ViewHelper::getHeaderConfig();
+
+        $db = Database::getInstance()->getConnection();
+        $categories = $db->query("SELECT id, name, slug FROM categories ORDER BY name ASC")->fetchAll();
+        $pages = $db->query("SELECT id, title, slug FROM pages WHERE status = 'published' ORDER BY title ASC")->fetchAll();
+
         $pageTitle = 'تنظیمات هدر';
         $contentView = __DIR__ . '/../Views/admin/settings_header.php';
         require_once __DIR__ . '/../Views/layout.php';
@@ -142,6 +223,11 @@ class AdminController extends Controller {
         }
 
         $footerConfig = ViewHelper::getFooterConfig();
+
+        $db = Database::getInstance()->getConnection();
+        $categories = $db->query("SELECT id, name, slug FROM categories ORDER BY name ASC")->fetchAll();
+        $pages = $db->query("SELECT id, title, slug FROM pages WHERE status = 'published' ORDER BY title ASC")->fetchAll();
+
         $pageTitle = 'تنظیمات فوتر';
         $contentView = __DIR__ . '/../Views/admin/settings_footer.php';
         require_once __DIR__ . '/../Views/layout.php';

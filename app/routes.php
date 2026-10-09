@@ -30,6 +30,12 @@ $router->get('/profile/{username}', 'ProfileController@show');
 $router->get('/tag/{slug}', 'TagController@show');
 $router->get('/api/tags/search', 'TagController@search');
 
+// Category Routes
+$router->get('/category/{slug}', 'CategoryController@show');
+
+// Page Routes
+$router->get('/page/{slug}', 'PageController@show');
+
 // Social Routes
 $router->post('/video/{id}/comment', 'SocialController@addComment');
 $router->post('/video/{id}/rate', 'SocialController@rateVideo');
@@ -39,10 +45,14 @@ $router->post('/friend/{id}', 'SocialController@friendAction');
 $router->get('/setup', 'SetupController@index');
 $router->post('/setup', 'SetupController@index');
 $router->get('/admin', 'AdminController@dashboard');
+$router->get('/admin/categories', 'AdminController@categories');
+$router->post('/admin/category/add', 'AdminController@addCategory');
 $router->get('/admin/settings/header', 'AdminController@headerSettings');
 $router->post('/admin/settings/header', 'AdminController@headerSettings');
 $router->get('/admin/settings/footer', 'AdminController@footerSettings');
 $router->post('/admin/settings/footer', 'AdminController@footerSettings');
+$router->get('/admin/pages', 'AdminController@pages');
+$router->post('/admin/page/add', 'AdminController@addPage');
 $router->get('/admin/tags', 'AdminController@tags');
 $router->post('/admin/tag/{id}/moderate', 'AdminController@moderateTag');
 $router->get('/admin/users', 'AdminController@users');

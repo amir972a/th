@@ -63,7 +63,30 @@
                     <?php foreach ($headerConfig['menu'] as $i => $item): ?>
                     <tr>
                         <td><input type="text" name="menu[<?= $i ?>][label]" value="<?= htmlspecialchars($item['label'] ?? '') ?>" class="form-control"></td>
-                        <td><input type="text" name="menu[<?= $i ?>][url]" value="<?= htmlspecialchars($item['url'] ?? '') ?>" class="form-control" style="direction: ltr;"></td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="text" name="menu[<?= $i ?>][url]" value="<?= htmlspecialchars($item['url'] ?? '') ?>" class="form-control" style="direction: ltr; flex: 1;" placeholder="لینک مستقیم یا انتخاب...">
+                                <select class="form-control" onchange="this.previousElementSibling.value = this.value; this.value='';" style="width: auto;">
+                                    <option value="">انتخاب...</option>
+                                    <optgroup label="لینک‌های سیستمی">
+                                        <option value="/">خانه</option>
+                                        <option value="/login">ورود</option>
+                                        <option value="/register">ثبت نام</option>
+                                        <option value="/upload">آپلود</option>
+                                    </optgroup>
+                                    <optgroup label="دسته‌بندی‌ها">
+                                        <?php foreach ($categories as $cat): ?>
+                                            <option value="category:<?= htmlspecialchars($cat['id']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                    <optgroup label="صفحات">
+                                        <?php foreach ($pages as $p): ?>
+                                            <option value="page:<?= htmlspecialchars($p['id']) ?>"><?= htmlspecialchars($p['title']) ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </td>
                         <td><input type="checkbox" name="menu[<?= $i ?>][enabled]" <?= (isset($item['enabled']) && $item['enabled']) ? 'checked' : '' ?>></td>
                         <td>
                             <button type="button" class="btn" style="padding: 2px 5px;" onclick="moveRowUp(this)">↑</button>
@@ -90,7 +113,30 @@ function addMenuItem() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td><input type="text" name="menu[${menuCounter}][label]" class="form-control"></td>
-        <td><input type="text" name="menu[${menuCounter}][url]" class="form-control" style="direction: ltr;" value="#"></td>
+        <td>
+            <div style="display: flex; gap: 5px;">
+                <input type="text" name="menu[${menuCounter}][url]" class="form-control" style="direction: ltr; flex: 1;" value="#" placeholder="لینک مستقیم یا انتخاب...">
+                <select class="form-control" onchange="this.previousElementSibling.value = this.value; this.value='';" style="width: auto;">
+                    <option value="">انتخاب...</option>
+                    <optgroup label="لینک‌های سیستمی">
+                        <option value="/">خانه</option>
+                        <option value="/login">ورود</option>
+                        <option value="/register">ثبت نام</option>
+                        <option value="/upload">آپلود</option>
+                    </optgroup>
+                    <optgroup label="دسته‌بندی‌ها">
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="category:<?= htmlspecialchars($cat['id']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                    <optgroup label="صفحات">
+                        <?php foreach ($pages as $page): ?>
+                            <option value="page:<?= htmlspecialchars($page['id']) ?>"><?= htmlspecialchars($page['title']) ?></option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                </select>
+            </div>
+        </td>
         <td><input type="checkbox" name="menu[${menuCounter}][enabled]" checked></td>
         <td>
             <button type="button" class="btn" style="padding: 2px 5px;" onclick="moveRowUp(this)">↑</button>
