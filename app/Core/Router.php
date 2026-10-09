@@ -12,7 +12,7 @@ class Router {
 
     private function addRoute($method, $route, $action) {
         // Convert route variables {id} to regex
-        $routeRegex = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?P<\1>[a-zA-Z0-9_-]+)', $route);
+        $routeRegex = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?P<$1>[a-zA-Z0-9_-]+)', $route);
         $routeRegex = '#^' . $routeRegex . '$#';
 
         $this->routes[] = [

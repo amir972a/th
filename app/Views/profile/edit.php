@@ -13,7 +13,7 @@ $pageTitle = "ویرایش پروفایل - " . APP_NAME;
         <?php unset($_SESSION['success']); ?>
     <?php endif; ?>
 
-    <form method="POST" action="/profile/edit" class="profile-edit-form">
+    <form method="POST" action="<?= BASE_URL ?>/profile/edit" class="profile-edit-form">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
 
         <div class="form-group">
