@@ -8,33 +8,56 @@
 </head>
 <body>
 
-<header>
-    <div class="nav-container">
-        <div class="logo">
-            <a href="<?= BASE_URL ?>/"><?= APP_NAME ?></a>
-        </div>
+<header class="site-header">
+    <div class="top-bar">
+        <div class="nav-container">
+            <div class="welcome-msg">
+                به <span class="text-primary">پرشین</span>‌وید خوش آمدید - بهترین مکان برای ویدیوهای شما
+            </div>
 
-        <div class="search-bar">
-            <form action="<?= BASE_URL ?>/search" method="GET">
-                <input type="text" name="q" placeholder="جستجو..." required>
-                <button type="submit">🔍</button>
-            </form>
-        </div>
+            <div class="top-right-actions">
+                <div class="search-bar">
+                    <form action="<?= BASE_URL ?>/search" method="GET">
+                        <input type="text" name="q" placeholder="جستجو..." required>
+                        <button type="submit">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
+                    </form>
+                </div>
 
-        <div class="nav-links">
-            <ul>
-                <?php if (Session::get('user_id')): ?>
-                    <li><a href="<?= BASE_URL ?>/upload">آپلود ویدیو</a></li>
-                    <li><a href="<?= BASE_URL ?>/profile">پروفایل</a></li>
+                <div class="auth-links">
+                    <?php if (Session::get('user_id')): ?>
+                        <a href="<?= BASE_URL ?>/profile">👤 <?= Security::escape(Session::get('username')) ?></a>
+                        <span class="separator">|</span>
+                        <a href="<?= BASE_URL ?>/logout">🚪 خروج</a>
+                    <?php else: ?>
+                        <a href="<?= BASE_URL ?>/register">🔒 ثبت نام</a>
+                        <span class="separator">|</span>
+                        <a href="<?= BASE_URL ?>/login">👤 ورود</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-nav-bar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="<?= BASE_URL ?>/"><span class="text-primary">PERSIAN</span> VID</a>
+            </div>
+
+            <div class="main-links">
+                <ul>
+                    <li class="active"><a href="<?= BASE_URL ?>/">خانه</a></li>
+                    <li><a href="#">ویدیوها</a></li>
+                    <li><a href="#">پلی‌لیست‌ها</a></li>
+                    <li><a href="#">دسته‌بندی‌ها</a></li>
                     <?php if (Session::get('user_role') === 'admin' || Session::get('user_role') === 'moderator'): ?>
                         <li><a href="<?= BASE_URL ?>/admin">پنل مدیریت</a></li>
                     <?php endif; ?>
-                    <li><a href="<?= BASE_URL ?>/logout">خروج</a></li>
-                <?php else: ?>
-                    <li><a href="<?= BASE_URL ?>/login">ورود</a></li>
-                    <li><a href="<?= BASE_URL ?>/register">ثبت نام</a></li>
-                <?php endif; ?>
-            </ul>
+                    <li class="upload-btn"><a href="<?= BASE_URL ?>/upload">⬆ آپلود</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </header>
