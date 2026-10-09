@@ -19,6 +19,8 @@ $router->get('/stream/{id}', 'VideoController@stream');
 $router->get('/thumbnail/{filename}', 'VideoController@thumbnail');
 
 // Profile Routes
+$router->get('/profile/edit', 'ProfileController@edit');
+$router->post('/profile/edit', 'ProfileController@edit');
 $router->get('/profile', 'ProfileController@show');
 $router->get('/profile/{username}', 'ProfileController@show');
 

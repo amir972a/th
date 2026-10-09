@@ -58,15 +58,21 @@ a:hover {
 
 /* Top Bar */
 .top-bar {
-    background-color: #111;
-    border-bottom: 1px solid #000;
+    background-color: #141414;
+    border-bottom: 1px solid #0a0a0a;
     font-size: 13px;
-    padding: 8px 0;
+    padding: 10px 0;
+}
+
+.top-bar .nav-container {
+    padding: 0;
 }
 
 .welcome-msg {
     font-weight: bold;
     text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
 }
 
 .top-right-actions {
@@ -77,8 +83,8 @@ a:hover {
 
 .search-bar form {
     display: flex;
-    background-color: #222;
-    border-radius: 3px;
+    background-color: #333;
+    border-radius: 2px;
     overflow: hidden;
 }
 
@@ -87,7 +93,7 @@ a:hover {
     background: transparent;
     border: none;
     color: #fff;
-    width: 250px;
+    width: 280px;
     font-family: 'Vazirmatn', sans-serif;
 }
 .search-bar input:focus {
@@ -96,9 +102,10 @@ a:hover {
 
 .search-bar button {
     padding: 6px 12px;
-    background: transparent;
+    background: #2a2a2a;
     border: none;
-    color: #888;
+    border-right: 1px solid #222;
+    color: #aaa;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -106,6 +113,7 @@ a:hover {
 }
 .search-bar button:hover {
     color: #fff;
+    background: #444;
 }
 
 .auth-links {
@@ -141,15 +149,42 @@ a:hover {
 }
 
 .logo {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     font-family: Arial, sans-serif;
     letter-spacing: -1px;
-    padding: 15px 20px;
+    padding: 12px 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    direction: ltr; /* Force LTR so PERSIAN comes before VID */
 }
 .logo a {
     color: #fff;
     text-decoration: none;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+}
+.logo-vid-wrapper {
+    position: relative;
+    display: inline-block;
+}
+/* Replicate the red circular arc from THISVID */
+.logo-arc {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;
+    height: 55px;
+    border: 5px solid var(--primary-color);
+    border-radius: 50%;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    z-index: -1;
+    transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .main-links ul {
@@ -177,6 +212,7 @@ a:hover {
     font-size: 14px;
     display: block;
     position: relative;
+    white-space: nowrap;
 }
 .main-links a:hover {
     text-decoration: none;

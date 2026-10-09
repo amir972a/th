@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . ' - ' : '' ?><?= APP_NAME ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=<?= filemtime(PUBLIC_PATH . '/css/style.css') ?>">
 </head>
 <body>
 
@@ -43,7 +43,13 @@
     <div class="main-nav-bar">
         <div class="nav-container">
             <div class="logo">
-                <a href="<?= BASE_URL ?>/"><span class="text-primary">PERSIAN</span> VID</a>
+                <a href="<?= BASE_URL ?>/">
+                    <span class="text-primary">PERSIAN</span>
+                    <div class="logo-vid-wrapper" style="margin-right: 5px; color: #fff;">
+                        VID
+                        <div class="logo-arc"></div>
+                    </div>
+                </a>
             </div>
 
             <div class="main-links">
@@ -51,7 +57,10 @@
                     <li class="active"><a href="<?= BASE_URL ?>/">خانه</a></li>
                     <li><a href="#">ویدیوها</a></li>
                     <li><a href="#">پلی‌لیست‌ها</a></li>
-                    <li><a href="#">دسته‌بندی‌ها</a></li>
+                    <li><a href="#">عکس‌ها</a></li>
+                    <li><a href="#">هوش مصنوعی 🔥</a></li>
+                    <li><a href="#">☰ دسته‌بندی‌ها</a></li>
+                    <li><a href="#">انجمن</a></li>
                     <?php if (Session::get('user_role') === 'admin' || Session::get('user_role') === 'moderator'): ?>
                         <li><a href="<?= BASE_URL ?>/admin">پنل مدیریت</a></li>
                     <?php endif; ?>

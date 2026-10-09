@@ -73,4 +73,46 @@ class ProfileController extends Controller {
         $contentView = __DIR__ . '/../Views/profile/view.php';
         require_once __DIR__ . '/../Views/layout.php';
     }
+
+    public function edit() {
+        $userId = Session::get('user_id');
+        if (!$userId) {
+            $this->redirect('/login');
+        }
+
+        require_once __DIR__ . '/../Models/UserModel.php';
+        $userModel = new UserModel();
+        $user = $userModel->findById($userId);
+
+        if ($this->isPost()) {
+            if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
+                Session::setFlash('error', 'توکن امنیتی نامعتبر است.');
+                $this->redirect('/profile/edit');
+            }
+
+            $displayName = trim($_POST['display_name']);
+            $bio = trim($_POST['bio']);
+            $gender = trim($_POST['gender']);
+            $interests = trim($_POST['interests']);
+
+            if ($gender === '') {
+                $gender = null;
+            } elseif (!in_array($gender, ['male', 'female', 'other'])) {
+                Session::setFlash('error', 'جنسیت نامعتبر است.');
+                $this->redirect('/profile/edit');
+            }
+
+            if (empty($displayName)) {
+                Session::setFlash('error', 'نام نمایشی نمی‌تواند خالی باشد.');
+            } else {
+                $userModel->updateProfile($userId, $displayName, $bio, $gender, $interests);
+                Session::setFlash('success', 'پروفایل با موفقیت بروزرسانی شد.');
+                $this->redirect('/profile');
+            }
+        }
+
+        $pageTitle = 'ویرایش پروفایل';
+        $contentView = __DIR__ . '/../Views/profile/edit.php';
+        require_once __DIR__ . '/../Views/layout.php';
+    }
 }

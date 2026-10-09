@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     display_name VARCHAR(100),
     bio TEXT,
+    gender ENUM('male', 'female', 'other') NULL,
+    interests VARCHAR(255) NULL,
     avatar_path VARCHAR(255),
     role ENUM('guest', 'member', 'moderator', 'admin') DEFAULT 'member',
     status ENUM('active', 'suspended', 'banned') DEFAULT 'active',

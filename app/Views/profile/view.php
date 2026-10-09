@@ -61,10 +61,26 @@
                 <?php endif; ?>
             </form>
         <?php else: ?>
-            <button class="btn" style="background:#555; cursor:default;">پروفایل شما</button>
+            <a href="<?= BASE_URL ?>/profile/edit" class="btn">ویرایش پروفایل</a>
         <?php endif; ?>
     </div>
 </div>
+
+<?php if (!empty($profileUser['gender']) || !empty($profileUser['interests'])): ?>
+    <div style="background: var(--secondary-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <?php if (!empty($profileUser['gender'])): ?>
+            <p><strong>جنسیت:</strong>
+                <?php
+                    $g = $profileUser['gender'];
+                    echo ($g == 'male') ? 'مرد' : (($g == 'female') ? 'زن' : 'سایر');
+                ?>
+            </p>
+        <?php endif; ?>
+        <?php if (!empty($profileUser['interests'])): ?>
+            <p><strong>علایق:</strong> <?= Security::escape($profileUser['interests']) ?></p>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
 
 <?php if ($isOwner && !empty($pendingRequests)): ?>
     <div style="background: rgba(229, 9, 20, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 8px; margin-bottom: 20px;">

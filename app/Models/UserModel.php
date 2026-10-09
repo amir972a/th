@@ -35,11 +35,13 @@ class UserModel {
         ]);
     }
 
-    public function updateProfile($id, $displayName, $bio) {
-        $stmt = $this->db->prepare("UPDATE users SET display_name = :display_name, bio = :bio WHERE id = :id");
+    public function updateProfile($id, $displayName, $bio, $gender = null, $interests = null) {
+        $stmt = $this->db->prepare("UPDATE users SET display_name = :display_name, bio = :bio, gender = :gender, interests = :interests WHERE id = :id");
         return $stmt->execute([
             'display_name' => $displayName,
             'bio' => $bio,
+            'gender' => $gender,
+            'interests' => $interests,
             'id' => $id
         ]);
     }

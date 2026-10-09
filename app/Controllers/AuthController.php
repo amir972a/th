@@ -36,7 +36,7 @@ class AuthController extends Controller {
                         Session::set('username', $user['username']);
                         Session::set('user_role', $user['role']);
 
-                        $this->redirect('/');
+                        $this->redirect('/profile');
                     }
                 } else {
                     Session::setFlash('error', 'نام کاربری یا رمز عبور اشتباه است.');
